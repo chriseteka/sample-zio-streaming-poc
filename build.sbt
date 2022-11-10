@@ -14,7 +14,9 @@ lazy val NaiveExternalHttpService = {
       libraryDependencies ++= Seq(
         dev.zio.`zio-core`,
         dev.zio.`zio-test`,
-        dev.zio.`zio-http`
+        org.postgresql.postgresql,
+        ioi.getquill.`quill-jdbc-zio`,
+        com.github.ghostdogpr.`caliban-zio-http`
       ),
       testFrameworks += `zio-test-framework`
     )
@@ -38,8 +40,6 @@ lazy val StreamingCore = {
 //Projects Core Dependencies
 lazy val CoreDependencies = Seq(
   dev.zio.`zio-core`,
-  dev.zio.`zio-http`,
-  dev.zio.`zio-stream`
 )
 
 //Projects Test Dependencies

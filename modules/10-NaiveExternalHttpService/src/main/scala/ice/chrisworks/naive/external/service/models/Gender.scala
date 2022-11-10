@@ -1,7 +1,7 @@
 package ice.chrisworks.naive.external.service.models
 
-sealed trait Gender
+sealed case class Gender()
 object Gender {
-  final case object Male    extends Gender
-  final case object Female  extends Gender
+  final object Male    extends Gender
+  final object Female  extends Gender
 }
