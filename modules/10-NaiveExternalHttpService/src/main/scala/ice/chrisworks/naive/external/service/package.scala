@@ -8,7 +8,7 @@ package object service {
 
   type EntityId = UUID
 
-  sealed abstract class AppException(message: String)
+  sealed abstract class AppException(message: String) extends Throwable
   object AppException {
     final case class NotFoundException(entity: EntityId)  extends AppException(s"$entity not found")
     final case class CustomException(msg: String)         extends AppException(msg)

@@ -1,7 +1,11 @@
 package ice.chrisworks.naive.external.service.models
 
-sealed case class Gender()
-object Gender {
-  final object Male    extends Gender
-  final object Female  extends Gender
+object Gender extends Enumeration {
+  type Gender = Value
+  val MALE, FEMALE, Unknown = Value
+
+  def withNameOpt(s: String): Option[Value] = values.find(_.toString == s)
+
+  def withNameWithDefault(name: String): Value =
+    values.find(_.toString.toLowerCase == name.toLowerCase()).getOrElse(Unknown)
 }

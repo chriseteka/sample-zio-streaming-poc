@@ -13,9 +13,13 @@ lazy val NaiveExternalHttpService = {
       name := "10-NaiveExternalHttpService",
       libraryDependencies ++= Seq(
         dev.zio.`zio-core`,
+        dev.zio.`zio-json`,
+        dev.zio.`zio-sql`,
         dev.zio.`zio-test`,
+        dev.zio.`zio-config`,
+        dev.zio.`zio-config-typesafe`,
+        dev.zio.`zio-config-magnolia`,
         org.postgresql.postgresql,
-        ioi.getquill.`quill-jdbc-zio`,
         com.github.ghostdogpr.`caliban-zio-http`
       ),
       testFrameworks += `zio-test-framework`
