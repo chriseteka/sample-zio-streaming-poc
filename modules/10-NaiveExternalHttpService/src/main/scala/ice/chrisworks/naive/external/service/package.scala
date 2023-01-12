@@ -40,7 +40,7 @@ package object service {
     def readOne(entityId: EntityId): ZIO[Service with ConnectionPool, AppException, Option[AppEntity]] =
       ZIO.serviceWithZIO[Service](_.readOne(entityId))
 
-    def readAll(): ZIO[Service with ConnectionPool, AppException, List[AppEntity]] =
+    def readAll(): ZIO[Service with ConnectionPool, AppException, Chunk[AppEntity]] =
       ZIO.serviceWithZIO[Service](_.readAll())
 
     def update(entityId: EntityId, update: AppEntity): ZIO[Service with ConnectionPool, AppException, AppEntity] =

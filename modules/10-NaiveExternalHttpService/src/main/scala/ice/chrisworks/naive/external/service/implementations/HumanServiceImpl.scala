@@ -4,15 +4,14 @@ import ice.chrisworks.naive.external.service.AppException.CustomException
 import ice.chrisworks.naive.external.service.models.Human
 import ice.chrisworks.naive.external.service.models.schema.DatabaseSchema
 import ice.chrisworks.naive.external.service.{AppRes, EntityId, HumanService}
-import zio.sql.ConnectionPool
-import zio.{Chunk, ZIO, ZLayer}
 import zio.sql.postgresql.PostgresJdbcModule
 import zio.stream.ZStream
+import zio.{Chunk, ZIO}
 
 final case class HumanServiceImpl()
   extends HumanService with PostgresJdbcModule with DatabaseSchema {
-  import HumanSchema._
   import CommunitiesSchema._
+  import HumanSchema._
   import ice.chrisworks.naive.external.service.models.schema.Tables._
 
   override def create(entity: Human): AppRes[Human] = ???
@@ -41,6 +40,7 @@ final case class HumanServiceImpl()
           )
     }))
 
+    ZIO.logInfo(s"Query to execute fetchAllHuman is ${println(renderRead(query))}") *>
     res.runHead.mapError(err => {
       err.printStackTrace()
       CustomException(err.getMessage)
@@ -60,7 +60,6 @@ final case class HumanServiceImpl()
       ).from(humanTable.leftOuter(communitiesTable)
         .on(bornIn === communityId))
 
-    ZIO.logInfo(s"Query to execute fetchAllHuman is ${println(renderRead(query))}")
     val res: ZStream[SqlDriver, Exception, Human] = execute[Human](query.to({
       //todo: of course we can call an apply function and give all the args to it
       case (a, b, c, d, e, f, g) =>
@@ -71,6 +70,7 @@ final case class HumanServiceImpl()
           )
     }))
 
+    ZIO.logInfo(s"Query to execute fetchAllHuman is ${println(renderRead(query))}") *>
     res.runCollect.mapError(err => {
       err.printStackTrace()
       CustomException(err.getMessage)
