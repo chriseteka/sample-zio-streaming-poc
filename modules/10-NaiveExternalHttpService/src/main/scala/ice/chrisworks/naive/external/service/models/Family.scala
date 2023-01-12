@@ -1,11 +1,13 @@
 package ice.chrisworks.naive.external.service.models
 
-case class Family(entityId: String,
+import ice.chrisworks.naive.external.service.EntityId
+
+case class Family(entityId: EntityId,
                   familyName: String,
-//                  parents: Set[Human],
-//                  children: Set[Human]
-                 ) {
-//  val familyMembers: Set[Human] = parents ++ children
+                  parents: Set[Human],
+                  children: Set[Human],
+                  livesIn: Community) {
+  val familyMembers: Set[Human] = parents ++ children
 }
 
 object Family {

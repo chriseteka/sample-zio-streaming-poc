@@ -1,43 +1,42 @@
 package ice.chrisworks.naive.external.service.models.schema
 
-import ice.chrisworks.naive.external.service.models.{Community, Family, Human}
-import zio.schema.{DeriveSchema, Schema}
+import ice.chrisworks.naive.external.service.models.schema.Tables._
+import zio.schema.DeriveSchema
 import zio.sql.postgresql.PostgresJdbcModule
 
-
+/**
+ * Maps all the table objects to an actual database (allows for serializing and deserializing DB data)
+ */
 trait DatabaseSchema extends PostgresJdbcModule {
 
-  case class Children(humanId: String, childId: String)
-  case class Parents(humanId: String, familyId: String)
-
   object Children {
-    implicit val childrenSchema = DeriveSchema.gen[Children]
-    val children = defineTable[Children]
-    val (humanId, childId) = children.columns
+    implicit val childrenSchema = DeriveSchema.gen[children]
+    val childrenTable = defineTable[children]
+    val (humanId, familyId) = childrenTable.columns
   }
 
 
-  object Community {
-    implicit val communitySchema = DeriveSchema.gen[Community]
-    val communities = defineTable[Community]
-    val (entityId, name, country) = communities.columns
+  object CommunitySchema {
+    implicit val communitySchema = DeriveSchema.gen[communities]
+    val communitiesTable = defineTable[communities]
+    val (communityId, communityName, country) = communitiesTable.columns
   }
 
-  object Family {
-    implicit val communitySchema = DeriveSchema.gen[Family]
-    val families = defineTable[Family]
-    val (entityId, familyNae) = families.columns
+  object FamilySchema {
+    implicit val communitySchema = DeriveSchema.gen[families]
+    val familiesTable = defineTable[families]
+    val (familyId, familyName, livesIn) = familiesTable.columns
   }
 
   object HumanSchema {
-    implicit val humanSchema = DeriveSchema.gen[Human]
-    val human = defineTable[Human]
-    val (entityId, name, age, gender, community) = human.columns
+    implicit val humanSchema = DeriveSchema.gen[human]
+    val humanTable = defineTable[human]
+    val (humanId, humanName, age, gender, bornIn) = humanTable.columns
   }
 
   object Parent {
-    implicit val parentsSchema = DeriveSchema.gen[Parents]
-    val parents = defineTable[Parents]
-    val (humanId, familyId) = parents.columns
+    implicit val parentsSchema = DeriveSchema.gen[parents]
+    val parentsTable = defineTable[parents]
+    val (humanId, familyId) = parentsTable.columns
   }
 }

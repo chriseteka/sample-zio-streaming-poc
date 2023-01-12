@@ -1,19 +1,25 @@
 package ice.chrisworks.naive.external.service.models
 
-import zio.schema.{DeriveSchema, Schema}
+import ice.chrisworks.naive.external.service.EntityId
+import ice.chrisworks.naive.external.service.models.Gender.Gender
+import ice.chrisworks.naive.external.service.models.Race.Race
 
-case class Human(entityId: String,
+case class Human(entityId: EntityId,
                  name: String,
                  age: Int,
-                 gender: String,
-                 community: String) {
-//  val country: Country            = community.country
-//  val race: Race                  = Race.withNameWithDefault(country.race)
+                 gender: Gender,
+                 bornIn: Community) {
+
+  val country: Country            = bornIn.country
+  val race: Race                  = Race.withNameWithDefault(country.race)
   val adulthoodStatus: Adulthood  = if (age < 16) Adulthood.Minor else Adulthood.Adult
 
-  implicit val humanSchema: Schema[Human] = DeriveSchema.gen[Human]
+//  implicit val humanSchema: Schema[Human] = DeriveSchema.gen[Human]
+
+  def withCommunity(bornIn: Community): Human = this.copy(bornIn = bornIn)
 }
 
 object Human {
 //  implicit val decoder: JsonDecoder[Human] = DeriveJsonDecoder.gen[Human]
+
 }

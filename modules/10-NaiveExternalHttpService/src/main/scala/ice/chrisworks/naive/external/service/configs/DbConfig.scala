@@ -21,7 +21,7 @@ final case class DbConfig(host: String,
 
 object DbConfig {
 
-  val dbConfigDescriptor = nested("db-config")(descriptor[DbConfig])
+  val dbConfigDescriptor: _root_.zio.config.ConfigDescriptor[DbConfig] = nested("db-config")(descriptor[DbConfig])
 
   val layer: ZLayer[Any, Nothing, DbConfig] = ZLayer(ZIO.attempt(
       TypesafeConfigSource.fromTypesafeConfig(
