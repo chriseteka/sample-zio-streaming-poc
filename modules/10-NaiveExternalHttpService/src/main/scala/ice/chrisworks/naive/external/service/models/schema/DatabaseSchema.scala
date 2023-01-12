@@ -9,20 +9,20 @@ import zio.sql.postgresql.PostgresJdbcModule
  */
 trait DatabaseSchema extends PostgresJdbcModule {
 
-  object Children {
+  object ChildrenSchema {
     implicit val childrenSchema = DeriveSchema.gen[children]
     val childrenTable = defineTable[children]
     val (humanId, familyId) = childrenTable.columns
   }
 
 
-  object CommunitySchema {
+  object CommunitiesSchema {
     implicit val communitySchema = DeriveSchema.gen[communities]
     val communitiesTable = defineTable[communities]
     val (communityId, communityName, country) = communitiesTable.columns
   }
 
-  object FamilySchema {
+  object FamiliesSchema {
     implicit val communitySchema = DeriveSchema.gen[families]
     val familiesTable = defineTable[families]
     val (familyId, familyName, livesIn) = familiesTable.columns
@@ -34,7 +34,7 @@ trait DatabaseSchema extends PostgresJdbcModule {
     val (humanId, humanName, age, gender, bornIn) = humanTable.columns
   }
 
-  object Parent {
+  object ParentsSchema {
     implicit val parentsSchema = DeriveSchema.gen[parents]
     val parentsTable = defineTable[parents]
     val (humanId, familyId) = parentsTable.columns

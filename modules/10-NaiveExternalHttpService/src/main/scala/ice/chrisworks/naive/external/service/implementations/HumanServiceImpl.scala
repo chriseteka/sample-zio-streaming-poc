@@ -12,45 +12,13 @@ import zio.stream.ZStream
 final case class HumanServiceImpl()
   extends HumanService with PostgresJdbcModule with DatabaseSchema {
   import HumanSchema._
-  import CommunitySchema._
-  import FamilySchema._
+  import CommunitiesSchema._
   import ice.chrisworks.naive.external.service.models.schema.Tables._
 
   override def create(entity: Human): AppRes[Human] = ???
 
   //Not efficient, cause we get a list from filter, how do we turn it to an option of a single data
-  override def readOne(id: EntityId): AppRes[Human] = ???
-
-//  {
-//    val query = select(entityId, name, age, gender)
-//      .from(human)
-//      .where(entityId === id)
-//
-////    ZIO.logInfo(s"Query to execute findOrderById is ${renderRead(query)}") *>
-//    val res: ZStream[SqlDriver, Exception, Human] = execute[Human](query.to({
-//      case (a, b, c, d) => Human(a, b, c, d, null)
-//    }))
-//
-//    res
-//  }
-
-  override def readAll(): AppRes[List[Human]] = ???
-
-//  {
-//    val selectAll =
-//      select(entityId, name, age, gender)
-//        .from(human)
-//
-//    execute[Human](selectAll.to(({
-//        case (a, b, c, d) => Human(a, b, c, d, null)
-//      })))
-//  }
-
-  override def update(entityId: EntityId, update: Human): AppRes[Human] = ???
-
-  override def deleteOne(entityId: EntityId): AppRes[Boolean] = ???
-
-  override def specialReadAll(): ZIO[ConnectionPool, CustomException, Chunk[Human]] = {
+  override def readOne(id: EntityId): AppRes[Option[Human]] = {
     val query =
       select(
         humanId,
@@ -60,7 +28,36 @@ final case class HumanServiceImpl()
         communityId,
         communityName,
         country
-    ).from(humanTable.leftOuter(communitiesTable)
+      ).from(humanTable.leftOuter(communitiesTable).on(bornIn === communityId))
+      .where(humanId === id.toString)
+
+    val res: ZStream[SqlDriver, Exception, Human] = execute[Human](query.to({
+      //todo: of course we can call an apply function and give all the args to it
+      case (a, b, c, d, e, f, g) =>
+        human(a, b, c, d, e)
+          .toDomainObject
+          .withCommunity(communities(e, f, g)
+            .toDomainObject
+          )
+    }))
+
+    res.runHead.mapError(err => {
+      err.printStackTrace()
+      CustomException(err.getMessage)
+    }).provideLayer(SqlDriver.live)
+  }
+
+  override def readAll(): AppRes[Chunk[Human]] = {
+    val query =
+      select(
+        humanId,
+        humanName,
+        age,
+        gender,
+        communityId,
+        communityName,
+        country
+      ).from(humanTable.leftOuter(communitiesTable)
         .on(bornIn === communityId))
 
     ZIO.logInfo(s"Query to execute fetchAllHuman is ${println(renderRead(query))}")
@@ -79,4 +76,8 @@ final case class HumanServiceImpl()
       CustomException(err.getMessage)
     }).provideLayer(SqlDriver.live)
   }
+
+  override def update(entityId: EntityId, update: Human): AppRes[Human] = ???
+
+  override def deleteOne(entityId: EntityId): AppRes[Boolean] = ???
 }

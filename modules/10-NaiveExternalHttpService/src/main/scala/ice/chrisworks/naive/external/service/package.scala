@@ -1,6 +1,7 @@
 package ice.chrisworks.naive.external
 
-import zio.{IO, Tag, ZIO}
+import zio.sql.ConnectionPool
+import zio.{Chunk, Tag, ZIO}
 
 import java.util.UUID
 
@@ -14,16 +15,16 @@ package object service {
     final case class CustomException(msg: String)         extends AppException(msg)
   }
 
-  type AppRes[AppEntity] = IO[AppException, AppEntity]
+  type AppRes[AppEntity] = ZIO[ConnectionPool, AppException, AppEntity]
 
   //Since it is shared, we can extract it here
   trait BaseCRUDService[AppEntity] {
 
     def create(entity: AppEntity): AppRes[AppEntity]
 
-    def readOne(entityId: EntityId): AppRes[AppEntity]
+    def readOne(entityId: EntityId): AppRes[Option[AppEntity]]
 
-    def readAll(): AppRes[List[AppEntity]]
+    def readAll(): AppRes[Chunk[AppEntity]]
 
     def update(entityId: EntityId, update: AppEntity): AppRes[AppEntity]
 
@@ -33,19 +34,19 @@ package object service {
   //Hence, we can do
   class BaseCRUDServiceAccessor[Service, AppEntity](implicit evi: Service <:< BaseCRUDService[AppEntity], tag: Tag[Service]) {
 
-    def create(entity: AppEntity): ZIO[Service, AppException, AppEntity] =
+    def create(entity: AppEntity): ZIO[Service with ConnectionPool, AppException, AppEntity] =
       ZIO.serviceWithZIO[Service](_.create(entity))
 
-    def readOne(entityId: EntityId): ZIO[Service, AppException, AppEntity] =
+    def readOne(entityId: EntityId): ZIO[Service with ConnectionPool, AppException, Option[AppEntity]] =
       ZIO.serviceWithZIO[Service](_.readOne(entityId))
 
-    def readAll(): ZIO[Service, AppException, List[AppEntity]] =
+    def readAll(): ZIO[Service with ConnectionPool, AppException, List[AppEntity]] =
       ZIO.serviceWithZIO[Service](_.readAll())
 
-    def update(entityId: EntityId, update: AppEntity): ZIO[Service, AppException, AppEntity] =
+    def update(entityId: EntityId, update: AppEntity): ZIO[Service with ConnectionPool, AppException, AppEntity] =
       ZIO.serviceWithZIO[Service](_.update(entityId, update))
 
-    def deleteOne(entityId: EntityId): ZIO[Service, AppException, Boolean] =
+    def deleteOne(entityId: EntityId): ZIO[Service with ConnectionPool, AppException, Boolean] =
       ZIO.serviceWithZIO[Service](_.deleteOne(entityId))
   }
 
