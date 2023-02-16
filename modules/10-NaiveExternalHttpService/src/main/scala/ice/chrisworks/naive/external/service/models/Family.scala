@@ -1,6 +1,7 @@
 package ice.chrisworks.naive.external.service.models
 
 import ice.chrisworks.naive.external.service.EntityId
+import zio.json.{DeriveJsonEncoder, JsonEncoder}
 
 case class Family(entityId: EntityId,
                   familyName: String,
@@ -11,5 +12,5 @@ case class Family(entityId: EntityId,
 }
 
 object Family {
-//  implicit val decoder: JsonDecoder[Family] = DeriveJsonDecoder.gen[Family]
+  implicit val encoder: JsonEncoder[Family] = DeriveJsonEncoder.gen[Family]
 }

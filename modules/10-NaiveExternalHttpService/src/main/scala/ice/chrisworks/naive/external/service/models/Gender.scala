@@ -1,5 +1,7 @@
 package ice.chrisworks.naive.external.service.models
 
+import zio.json.{DeriveJsonEncoder, JsonEncoder}
+
 object Gender extends Enumeration {
   type Gender = Value
   val MALE, FEMALE, Unknown = Value

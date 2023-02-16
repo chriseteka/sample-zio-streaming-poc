@@ -5,9 +5,9 @@ import ice.chrisworks.naive.external.service.models.Human
 import ice.chrisworks.naive.external.service.models.schema.DatabaseSchema
 import ice.chrisworks.naive.external.service.{AppRes, EntityId, HumanService}
 import zio.sql.postgresql.PostgresJdbcModule
-import zio.stream.ZStream
+import zio.stream.{ZSink, ZStream}
 import zio.{Chunk, ZIO}
-
+import zio.sql._
 final case class HumanServiceImpl()
   extends HumanService with PostgresJdbcModule with DatabaseSchema {
   import CommunitiesSchema._

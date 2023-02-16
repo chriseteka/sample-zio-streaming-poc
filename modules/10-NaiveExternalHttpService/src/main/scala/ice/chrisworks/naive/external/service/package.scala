@@ -1,11 +1,17 @@
 package ice.chrisworks.naive.external
 
+import ice.chrisworks.naive.external.service.models.Country
+import ice.chrisworks.naive.external.service.models.Gender.Gender
+import zio.json.{DeriveJsonEncoder, JsonEncoder}
 import zio.sql.ConnectionPool
 import zio.{Chunk, Tag, ZIO}
 
 import java.util.UUID
 
 package object service {
+
+  implicit val genderEncoder: JsonEncoder[Gender] = JsonEncoder[String].contramap(_.toString)
+  implicit val CountryEncoder: JsonEncoder[Country] = DeriveJsonEncoder.gen[Country]
 
   type EntityId = UUID
 
