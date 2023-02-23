@@ -1,6 +1,6 @@
 package ice.chrisworks.naive.external.service.models
 
-import zio.json.{DeriveJsonEncoder, JsonEncoder}
+import zio.json.JsonEncoder
 
 object Gender extends Enumeration {
   type Gender = Value
@@ -10,4 +10,6 @@ object Gender extends Enumeration {
 
   def withNameWithDefault(name: String): Value =
     values.find(_.toString.toLowerCase == name.toLowerCase()).getOrElse(Unknown)
+
+  implicit val genderEncoder: JsonEncoder[Gender] = JsonEncoder[String].contramap(_.toString)
 }

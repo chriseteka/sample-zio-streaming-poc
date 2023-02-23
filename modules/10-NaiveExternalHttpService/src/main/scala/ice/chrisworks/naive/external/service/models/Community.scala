@@ -1,7 +1,7 @@
 package ice.chrisworks.naive.external.service.models
 
 import ice.chrisworks.naive.external.service.EntityId
-import zio.json.{DeriveJsonDecoder, DeriveJsonEncoder, JsonDecoder, JsonEncoder}
+import zio.json.{DeriveJsonEncoder, JsonEncoder}
 
 import java.util.UUID
 

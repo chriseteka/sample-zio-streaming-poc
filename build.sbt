@@ -20,7 +20,8 @@ lazy val NaiveExternalHttpService = {
         dev.zio.`zio-config-typesafe`,
         dev.zio.`zio-config-magnolia`,
         org.postgresql.postgresql,
-        com.github.ghostdogpr.`caliban-zio-http`
+        com.github.ghostdogpr.`caliban-zio-http`,
+        "com.beachape" %% "enumeratum" % "1.7.2"
       ),
       testFrameworks += `zio-test-framework`
     )

@@ -4,13 +4,11 @@ package ice.chrisworks.naive.external.service.httproutes
 import ice.chrisworks.naive.external.service
 import ice.chrisworks.naive.external.service.HumanService
 import ice.chrisworks.naive.external.service.configs.DbConfig
-import ice.chrisworks.naive.external.service.implementations.HumanServiceImpl
-import zio._
 import zhttp.http._
-import zhttp.http.UHttp
 import zhttp.service.Server
+import zio._
 import zio.json._
-import zio.sql.{ConnectionPool, ConnectionPoolLive}
+import zio.sql.ConnectionPool
 
 object HTTPRequest extends ZIOAppDefault {
 
@@ -18,7 +16,7 @@ object HTTPRequest extends ZIOAppDefault {
   val app: Http[HumanService with ConnectionPool, service.AppException, Request, Response] = Http.collectZIO[Request]{
 
     case Method.GET -> !! / "Humans" =>
-      HumanService.readAll().map(d => Response.json(d.toList.toJson))
+      HumanService.readAll().map(d => Response.json(d.toJson))
   }
 
   val zApp = Http.collectZIO[Request]{

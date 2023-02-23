@@ -4,6 +4,7 @@ import ice.chrisworks.naive.external.service.AppException.CustomException
 import ice.chrisworks.naive.external.service.models.Human
 import ice.chrisworks.naive.external.service.models.schema.DatabaseSchema
 import ice.chrisworks.naive.external.service.{AppRes, EntityId, HumanService}
+import zio.Console.printLine
 import zio.sql.postgresql.PostgresJdbcModule
 import zio.stream.{ZSink, ZStream}
 import zio.{Chunk, ZIO}
@@ -71,7 +72,9 @@ final case class HumanServiceImpl()
     }))
 
     ZIO.logInfo(s"Query to execute fetchAllHuman is ${println(renderRead(query))}") *>
-    res.runCollect.mapError(err => {
+    res
+      .tap(r => printLine(r))
+      .runCollect.mapError(err => {
       err.printStackTrace()
       CustomException(err.getMessage)
     }).provideLayer(SqlDriver.live)
