@@ -1,6 +1,8 @@
 package ice.chrisworks.naive.external
 
+import ice.chrisworks.naive.external.service.models.schema.DatabaseSchema
 import zio.sql.ConnectionPool
+import zio.sql.postgresql.PostgresJdbcModule
 import zio.{Chunk, Tag, ZIO}
 
 import java.util.UUID
@@ -18,7 +20,7 @@ package object service {
   type AppRes[AppEntity] = ZIO[ConnectionPool, AppException, AppEntity]
 
   //Since it is shared, we can extract it here
-  trait BaseCRUDService[AppEntity] {
+  trait BaseCRUDService[AppEntity] extends PostgresJdbcModule with DatabaseSchema {
 
     def create(entity: AppEntity): AppRes[AppEntity]
 

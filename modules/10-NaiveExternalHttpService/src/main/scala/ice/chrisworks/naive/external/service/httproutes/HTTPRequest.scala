@@ -16,7 +16,7 @@ object HTTPRequest extends ZIOAppDefault {
   val c: String = Chunk.empty[Human].toJson //without this, our app just tumbles
 
   val port = 9000
-  val app: Http[HumanService with ConnectionPool, service.AppException, Request, Response] = Http.collectZIO[Request]{
+  val app: Http[HumanService with ConnectionPool, service.AppException, Request, Response] = Http.collectZIO[Request] {
 
     case Method.GET -> !! / "Humans" =>
       HumanService.readAll().map(d => Response.json(d.toJson))

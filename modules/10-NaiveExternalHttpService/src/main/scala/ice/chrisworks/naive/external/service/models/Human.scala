@@ -11,6 +11,8 @@ case class Human(entityId: EntityId,
                  gender: Gender,
                  bornIn: Community) {
 
+  require(name.nonEmpty && age > 0 && gender.toString.nonEmpty && bornIn.entityId.toString.nonEmpty) //Can throw NPE
+
   val country: Country            = bornIn.country
   val race: Race                  = Race.withNameWithDefault(country.race)
   val adulthoodStatus: Adulthood  = if (age < 16) Adulthood.Minor else Adulthood.Adult

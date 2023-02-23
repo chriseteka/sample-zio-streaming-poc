@@ -24,18 +24,13 @@ object Tables {
   final case class communities(communityId: String, communityName: String, country: String)
     extends DBTable[Community](communityId) {
 
-    override def toDomainObject: Community = Community(entityUUID, communityName,
-      Country.from(country), Set.empty, Set.empty)
+    override def toDomainObject: Community = Community(entityUUID, communityName, Country.from(country), Set.empty)
   }
 
   final case class families(familyId: String, familyName: String, livesIn: String)
     extends DBTable[Family](familyId) {
 
-    override def toDomainObject: Family = Family(entityUUID, familyName,
-      fetchParents(familyId), fetchChildren(familyId), fetchCommunity(livesIn))
-    val fetchParents: String => Set[Human] = ???
-    val fetchChildren: String => Set[Human] = ???
-    val fetchCommunity: String => Community = ???
+    override def toDomainObject: Family = Family(entityUUID, familyName, Set.empty, Set.empty, Community.empty)
   }
 
   final case class parents(parentId: String, familyId: String) //Join table

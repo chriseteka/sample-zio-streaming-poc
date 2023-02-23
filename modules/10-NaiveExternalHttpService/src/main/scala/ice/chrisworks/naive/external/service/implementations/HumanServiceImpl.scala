@@ -1,15 +1,12 @@
 package ice.chrisworks.naive.external.service.implementations
 
-import ice.chrisworks.naive.external.service.AppException.CustomException
+import ice.chrisworks.naive.external.service.AppException.{CustomException, NotFoundException}
 import ice.chrisworks.naive.external.service.models.Human
-import ice.chrisworks.naive.external.service.models.schema.DatabaseSchema
 import ice.chrisworks.naive.external.service.{AppRes, EntityId, HumanService}
 import zio.Console.printLine
-import zio.sql.postgresql.PostgresJdbcModule
 import zio.stream.ZStream
 import zio.{Chunk, ZIO}
-final case class HumanServiceImpl()
-  extends HumanService with PostgresJdbcModule with DatabaseSchema {
+final case class HumanServiceImpl() extends HumanService {
   import CommunitiesSchema._
   import HumanSchema._
   import ice.chrisworks.naive.external.service.models.schema.Tables._
@@ -52,7 +49,7 @@ final case class HumanServiceImpl()
     ZIO.logInfo(s"Query to execute fetchAllHuman is ${println(renderRead(query))}") *>
     res.runHead.mapError(err => {
       err.printStackTrace()
-      CustomException(err.getMessage)
+      NotFoundException(id)
     }).provideLayer(SqlDriver.live)
   }
 
@@ -97,7 +94,7 @@ final case class HumanServiceImpl()
     val res = execute(query)
     ZIO.logInfo(s"Query to execute updateHuman is ${println(renderUpdate(query))}") *>
       res
-        .mapBoth(exp => CustomException(exp.getMessage), _ => data)
+        .mapBoth(_ => NotFoundException(entityId), _ => data)
         .provideLayer(SqlDriver.live)
 
   }
@@ -108,7 +105,7 @@ final case class HumanServiceImpl()
 
     ZIO.logInfo(s"Query to execute deleteOneHuman is ${println(renderDelete(query))}") *>
       res
-        .mapBoth(exp => CustomException(exp.getMessage), deleted => deleted == 1)
+        .mapBoth(_ => NotFoundException(entityId), deleted => deleted == 1)
         .provideLayer(SqlDriver.live)
   }
 }
