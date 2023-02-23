@@ -6,16 +6,24 @@ import ice.chrisworks.naive.external.service.models.schema.DatabaseSchema
 import ice.chrisworks.naive.external.service.{AppRes, EntityId, HumanService}
 import zio.Console.printLine
 import zio.sql.postgresql.PostgresJdbcModule
-import zio.stream.{ZSink, ZStream}
+import zio.stream.ZStream
 import zio.{Chunk, ZIO}
-import zio.sql._
 final case class HumanServiceImpl()
   extends HumanService with PostgresJdbcModule with DatabaseSchema {
   import CommunitiesSchema._
   import HumanSchema._
   import ice.chrisworks.naive.external.service.models.schema.Tables._
 
-  override def create(entity: Human): AppRes[Human] = ???
+  override def create(entity: Human): AppRes[Human] = {
+    val query = insertInto(humanTable)(humanName, age, gender, bornIn)
+      .values((entity.name, entity.age, entity.gender.toString, entity.bornIn.entityId.toString))
+
+    val res = execute(query)
+    ZIO.logInfo(s"Query to execute deleteOneHuman is ${println(renderInsert(query))}") *>
+      res
+        .mapBoth(exp => CustomException(exp.getMessage), _ => entity)
+        .provideLayer(SqlDriver.live)
+  }
 
   //Not efficient, cause we get a list from filter, how do we turn it to an option of a single data
   override def readOne(id: EntityId): AppRes[Option[Human]] = {
@@ -80,7 +88,27 @@ final case class HumanServiceImpl()
     }).provideLayer(SqlDriver.live)
   }
 
-  override def update(entityId: EntityId, update: Human): AppRes[Human] = ???
+  override def update(entityId: EntityId, data: Human): AppRes[Human] = {
+    val query = update(humanTable).set(humanName, data.name)
+      .set(age, data.age)
+      .set(gender, data.gender.toString)
+      .where(humanId === entityId)
 
-  override def deleteOne(entityId: EntityId): AppRes[Boolean] = ???
+    val res = execute(query)
+    ZIO.logInfo(s"Query to execute updateHuman is ${println(renderUpdate(query))}") *>
+      res
+        .mapBoth(exp => CustomException(exp.getMessage), _ => data)
+        .provideLayer(SqlDriver.live)
+
+  }
+
+  override def deleteOne(entityId: EntityId): AppRes[Boolean] = {
+    val query = deleteFrom(humanTable).where(humanId === entityId.toString)
+    val res = execute(query)
+
+    ZIO.logInfo(s"Query to execute deleteOneHuman is ${println(renderDelete(query))}") *>
+      res
+        .mapBoth(exp => CustomException(exp.getMessage), deleted => deleted == 1)
+        .provideLayer(SqlDriver.live)
+  }
 }

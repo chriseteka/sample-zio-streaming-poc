@@ -1,6 +1,6 @@
 package ice.chrisworks.naive.external.service.models
 
-import zio.json.{DeriveJsonEncoder, JsonEncoder}
+import zio.json.{DeriveJsonDecoder, DeriveJsonEncoder, JsonDecoder, JsonEncoder}
 
 sealed case class Country(name: String, race: String)
 object Country {
@@ -15,4 +15,5 @@ object Country {
   }
 
   implicit val CountryEncoder: JsonEncoder[Country] = DeriveJsonEncoder.gen[Country]
+  implicit val decoder: JsonDecoder[Country] = DeriveJsonDecoder.gen[Country]
 }

@@ -4,6 +4,7 @@ package ice.chrisworks.naive.external.service.httproutes
 import ice.chrisworks.naive.external.service
 import ice.chrisworks.naive.external.service.HumanService
 import ice.chrisworks.naive.external.service.configs.DbConfig
+import ice.chrisworks.naive.external.service.models.Human
 import zhttp.http._
 import zhttp.service.Server
 import zio._
@@ -11,6 +12,8 @@ import zio.json._
 import zio.sql.ConnectionPool
 
 object HTTPRequest extends ZIOAppDefault {
+
+  val c: String = Chunk.empty[Human].toJson //without this, our app just tumbles
 
   val port = 9000
   val app: Http[HumanService with ConnectionPool, service.AppException, Request, Response] = Http.collectZIO[Request]{
